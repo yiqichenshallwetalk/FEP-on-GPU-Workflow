@@ -1,0 +1,95 @@
+
+;====================================================
+; NPT equilibration
+;====================================================
+
+; RUN CONTROL
+;----------------------------------------------------
+define       = -DPOSRES
+integrator   = sd            ; stochastic leap-frog integrator
+nsteps       = 500000        ; 2 * 500,000 fs = 1 ns
+dt           = 0.002         ; 2 fs
+comm-mode    = Linear        ; remove center of mass translation
+nstcomm      = 100           ; frequency for center of mass motion removal
+
+; OUTPUT CONTROL
+;----------------------------------------------------
+nstxout          = 50000      ; save coordinates to .trr every 100 ps
+nstvout          = 0          ; don't save velocities to .trr
+nstfout          = 0          ; don't save forces to .trr
+
+nstxtcout        = 1000       ; xtc compressed trajectory output every 2 ps
+xtc-precision    = 1000       ; precision with which to write to the compressed trajectory file
+nstlog           = 1000       ; update log file every 2 ps
+nstenergy        = 1000       ; save energies every 2 ps
+nstcalcenergy    = 100        ; calculate energies every 100 steps
+
+; BONDS
+;----------------------------------------------------
+constraint_algorithm   = lincs    ; holonomic constraints 
+constraints            = h-bonds  ; hydrogens only are constrained
+lincs_iter             = 1        ; accuracy of LINCS (1 is default)
+lincs_order            = 6        ; also related to accuracy (4 is default)
+lincs-warnangle        = 30       ; maximum angle that a bond can rotate before LINCS will complain (30 is default)
+continuation           = no       ; formerly known as 'unconstrained-start' - useful for exact continuations and reruns
+
+; NEIGHBOR SEARCHING
+;----------------------------------------------------
+cutoff-scheme    = Verlet
+ns-type          = grid   ; search neighboring grid cells
+nstlist          = 10     ; 20 fs (default is 10)
+rlist            = 1.2    ; short-range neighborlist cutoff (in nm)
+pbc              = xyz    ; 3D PBC
+
+; ELECTROSTATICS & EWALD
+;----------------------------------------------------
+coulombtype      = PME      ; Particle Mesh Ewald for long-range electrostatics
+rcoulomb         = 1.2      ; short-range electrostatic cutoff (in nm)
+ewald_geometry   = 3d       ; Ewald sum is performed in all three dimensions
+pme-order        = 4        ; interpolation order for PME (default is 4)
+fourierspacing   = 0.10     ; grid spacing for FFT
+ewald-rtol       = 1e-6     ; relative strength of the Ewald-shifted direct potential at rcoulomb
+optimize-fft     = no       ; don't calculate the optimal FFT plan for the grid at startup
+
+; VAN DER WAALS
+;----------------------------------------------------
+vdwtype         = Switch
+rvdw            = 1.2          ; short-range van der Waals cutoff (in nm)
+rvdw-switch     = 0.9
+DispCorr        = EnerPres     ; apply long range dispersion corrections for Energy and Pressure
+
+; TEMPERATURE COUPLING (SD ==> Langevin dynamics)
+;----------------------------------------------------
+tc_grps    =  Protein non-Protein
+tau_t      =  1.0 1.0
+ref_t      =  298.15 298.15
+
+; PRESSURE COUPLING
+;----------------------------------------------------
+pcoupl           = Berendsen
+pcoupltype       = isotropic            ; uniform scaling of box vectors
+refcoord_scaling = com                  ; centre of mass
+tau_p            = 0.5                  ; time constant (ps)
+ref_p            = 1.0                  ; reference pressure (bar)
+compressibility  = 4.5e-05              ; isothermal compressibility of water (bar^-1)
+
+; VELOCITY GENERATION
+;----------------------------------------------------
+gen_vel      = yes      ; Velocity generation is on (if gen_vel is 'yes', continuation should be 'no')
+gen_seed     = -1       ; Use random seed
+gen_temp     = 298.15
+
+; FREE ENERGY
+;----------------------------------------------------
+free-energy              = yes
+sc-alpha                 = 0.5
+sc-power                 = 1
+sc-sigma                 = 0.3
+sc-coul	                 = no
+init-lambda-state        = state_to_set
+restraint-lambdas        = 0.0 0.01 0.025 0.05 0.075 0.1 0.15 0.2 0.35 0.5 0.75 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0
+coul-lambdas             = 0.0 0.00 0.000 0.00 0.000 0.0 0.00 0.0 0.00 0.0 0.00 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0 1.00 1.0
+vdw-lambdas              = 0.0 0.00 0.000 0.00 0.000 0.0 0.00 0.0 0.00 0.0 0.00 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0   
+nstdhdl                  = 100
+dhdl-print-energy        = total
+calc-lambda-neighbors    = -1

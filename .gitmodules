@@ -1,0 +1,6 @@
+[submodule "metamol"]
+	path = metamol
+	url = https://github.com/yiqichenshallwetalk/MetaMol.git
+[submodule "gromacs-fep-gpu"]
+	path = gromacs-fep-gpu
+	url = https://github.com/yiqichenshallwetalk/GROMACS-FEP-GPU.git

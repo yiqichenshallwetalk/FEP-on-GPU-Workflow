@@ -1,0 +1,72 @@
+{
+    "name": "3svg-ligand",
+    "GMX": "gmx",
+    "solvation": {
+        "gmx_cmds": {
+            "screen": false,
+            "box": [5.3, 5.3, 5.3]
+        },
+        "input_data": {
+            "inp_gro": "lig.gro",
+            "inp_top": "lig.top"
+        },
+        "_comment": "all"
+    },
+    "prep-run-block1": {
+        "run_type": "enmin",
+        "state_range": [0, 30],
+        "gmx_cmds": {
+            "screen": false,
+            "extra_args": "-nb gpu -gpu_id 0",
+            "num_threads": [1, 10]
+        },           
+        "input_data": {
+            "inp_mdp": "enmin.mdp"
+        },
+        "_comment": "all"
+    },
+    "prep-run-block2": {
+        "run_type": "nvt",
+        "state_range": [0, 30],
+        "position_restrict": true,
+        "gmx_cmds": {
+            "screen": false,
+            "extra_args": "-nb gpu -pme gpu -bonded gpu -fep gpu -update gpu -gpu_id 0 -nsteps 100000",
+            "num_threads": [1, 10]
+        },
+        "input_data": {
+            "inp_mdp": "nvt.mdp",
+            "inp_itp": "posre_ligand.itp"
+        },
+        "_comment": "all"
+    },
+    "prep-run-block3": {
+        "run_type": "npt",
+        "state_range": [0, 30],
+        "position_restrict": true,
+        "gmx_cmds": {
+            "screen": false,
+            "extra_args": "-nb gpu -pme gpu -bonded gpu -fep gpu -update gpu -gpu_id 0 -nsteps 100000",
+            "num_threads": [1, 10]
+        },
+        "input_data": {
+            "inp_mdp": "npt.mdp",
+            "inp_itp": "posre_ligand.itp"
+        },
+        "_comment": "all"
+    },
+    "prep-run-block4": {
+        "run_type": "prod",
+        "state_range": [0, 30],
+        "compute_bar": true,
+        "gmx_cmds": {
+            "screen": false,
+            "extra_args": "-nb gpu -pme gpu -bonded gpu -fep gpu -update gpu -gpu_id 0 -nsteps 100000",
+            "num_threads": [1, 10]
+        },
+        "input_data": {
+            "inp_mdp": "prod.mdp"
+        },
+        "_comment": "all"
+    }
+}

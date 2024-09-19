@@ -1,0 +1,66 @@
+{
+    "name": "4mr3-complex",
+    "GMX": "gmx",
+    "prep-run-block1": {
+        "run_type": "enmin",
+        "state_range": [0, 41],
+        "gmx_cmds": {
+            "screen": false,
+            "extra_args": "-nb gpu -gpu_id 0",
+            "num_threads": [1, 10]
+        },
+        "input_data": {
+            "inp_mdp": "enmin.mdp",
+	        "inp_gro": "complex.gro",
+	        "inp_top": "complex.top"
+        },
+        "_comment": "all"
+    },
+    "prep-run-block2": {
+        "run_type": "nvt",
+        "state_range": [0, 41],
+        "pos_restrict": true,
+        "gmx_cmds": {
+            "screen": false,
+            "extra_args": "-nb gpu -pme gpu -bonded gpu -fep gpu -update gpu -gpu_id 0 -nsteps 2000",
+            "num_threads": [1, 10]
+        },
+        "input_data": {
+            "inp_mdp": "nvt.mdp",
+	        "inp_top": "complex.top",
+            "inp_itp": "posre_complex.itp"
+        },
+        "_comment": "all"
+    },
+    "prep-run-block3": {
+        "run_type": "npt",
+        "state_range": [0, 41],
+        "pos_restrict": true,
+        "gmx_cmds": {
+            "screen": false,
+            "extra_args": "-nb gpu -pme gpu -bonded gpu -fep gpu -update gpu -gpu_id 0 -nsteps 2000",
+            "num_threads": [1, 10]
+        },
+        "input_data": {
+            "inp_mdp": "npt.mdp",
+	        "inp_top": "complex.top",
+            "inp_itp": "posre_complex.itp"
+        },
+        "_comment": "all"
+    },
+    "prep-run-block4": {
+        "run_type": "prod",
+        "state_range": [0, 41],
+        "compute_bar": true,
+        "gmx_cmds": {
+            "screen": false,
+            "extra_args": "-nb gpu -pme gpu -bonded gpu -fep gpu -update gpu -gpu_id 0 -nsteps 2000",
+            "num_threads": [1, 10]
+        },
+        "input_data": {
+            "inp_mdp": "prod.mdp",
+	        "inp_top": "complex.top"
+        },
+        "_comment": "all"
+    }
+}
